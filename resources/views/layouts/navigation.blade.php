@@ -15,7 +15,7 @@
                         {{ __('بەشی سەرەکی') }}
                     </x-nav-link>
                     @hasanyrole('Admin|Normal_User')
-                        <x-nav-link href="#" class="dark:text-gray-100 dark:hover:text-white">خوێندکار</x-nav-link>
+                        <x-nav-link :href="route('students.index')" class="dark:text-gray-100 dark:hover:text-white">خوێندکار</x-nav-link>
                         <x-nav-link href="#" class="dark:text-gray-100 dark:hover:text-white">مامۆستا</x-nav-link>
                         <x-nav-link href="#" class="dark:text-gray-100 dark:hover:text-white">هاتووچۆ</x-nav-link>
                         <x-nav-link href="#" class="dark:text-gray-100 dark:hover:text-white">دارایی</x-nav-link>
@@ -37,11 +37,11 @@
             </div>
 
             <!-- بەشی لای چەپ: مۆدی تاریک و درۆپ داون -->
-            <div class="flex items-center sm:ms-6 gap-2 sm:gap-4">
+            <div class="flex items-center sm:ms-6 gap-2 sm:gap-1">
 
                 <!-- دوگمەی مۆدی تاریک (لە کۆتایی بەشەکان و پێش درۆپ داونەکە) -->
                 <button id="theme-toggle" type="button"
-                    class="text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none rounded-lg text-sm p-2.5">
+                    class="text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none rounded-lg text-sm p-1">
                     <svg id="theme-toggle-dark-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20"
                         xmlns="http://www.w3.org/2000/svg">
                         <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
@@ -56,10 +56,10 @@
 
                 <!-- ناوی بەکارهێنەر و دەرچوون -->
                 <div class="hidden sm:flex sm:items-center">
-                    <x-dropdown align="left" width="48">
+                    <x-dropdown align="left" width="38">
                         <x-slot name="trigger">
                             <button
-                                class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none transition ease-in-out duration-150">
+                                class="inline-flex items-center px-1 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none transition ease-in-out duration-150">
                                 <div>{{ Auth::user()->name }}</div>
                                 <div class="ms-1">
                                     <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg"
