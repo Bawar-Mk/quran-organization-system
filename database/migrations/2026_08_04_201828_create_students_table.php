@@ -21,7 +21,6 @@ return new class extends Migration
             $table->text('address')->nullable(); // ٦- ناونیشان
             $table->date('join_date'); // ٧- بەرواری پەیوەندی کردن
             $table->string('study_type')->default('ئاسایی'); // ٨- جۆری خوێندن (ئاسایی، ڕەوزە)
-            $table->decimal('score', 5, 2)->nullable(); // ٩- نمرە
             $table->string('marital_status')->nullable(); // ١٠- باری خێزانداری
             $table->timestamps();
         });

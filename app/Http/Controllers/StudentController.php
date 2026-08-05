@@ -11,7 +11,6 @@ class StudentController extends Controller
     {
         $query = Student::query();
 
-        // ١- گەڕانی گشتی (ناو یان مۆبایل)
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
@@ -20,37 +19,30 @@ class StudentController extends Controller
             });
         }
 
-        // ٢- فلتەری ڕەگەز
         if ($request->filled('gender') && $request->gender !== 'هەردووکی') {
             $query->where('gender', $request->gender);
         }
 
-        // ٣- فلتەری باری خێزانداری
         if ($request->filled('marital_status') && $request->marital_status !== 'هەردووکی') {
             $query->where('marital_status', $request->marital_status);
         }
 
-        // ٤- فلتەری جۆری خوێندن
         if ($request->filled('study_type') && $request->study_type !== 'هەردووکی') {
             $query->where('study_type', $request->study_type);
         }
 
-        // ٥- فلتەری بەرواری لەدایکبوون
         if ($request->filled('date_of_birth')) {
             $query->whereDate('date_of_birth', $request->date_of_birth);
         }
 
-        // ٦- فلتەری بەرواری پەیوەندیکردن
         if ($request->filled('join_date')) {
             $query->whereDate('join_date', $request->join_date);
         }
 
-        // ٧- فلتەری ئاستی خوێندن
         if ($request->filled('education_level')) {
             $query->where('education_level', 'like', "%{$request->education_level}%");
         }
 
-        // وەرگرتنی ١٠ داتا بۆ هەر پەڕەیەک و هێشتنەوەی بەهاکانی گەڕان لەلینکەکەدا
         $students = $query->latest()->paginate(10)->appends($request->all());
 
         return view('students.index', compact('students'));
@@ -67,12 +59,26 @@ class StudentController extends Controller
             'address' => 'nullable|string',
             'join_date' => 'required|date',
             'study_type' => 'required|string',
-            'score' => 'nullable|numeric',
             'marital_status' => 'nullable|string',
         ]);
 
         Student::create($validated);
-
         return redirect()->route('students.index')->with('success', 'خوێندکار بە سەرکەوتوویی زیادکرا.');
+    }
+
+    // پیشاندانی زانیاری خوێندکار
+    public function show($id)
+    {
+        $student = Student::findOrFail($id);
+        // لێرەدا لە داهاتوودا وانەکان و خولەکان دەنێریت بۆ ڤیوەکە
+        return view('students.show', compact('student'));
+    }
+
+    // سڕینەوەی خوێندکار
+    public function destroy($id)
+    {
+        $student = Student::findOrFail($id);
+        $student->delete();
+        return redirect()->route('students.index')->with('success', 'خوێندکار بە سەرکەوتوویی سڕایەوە.');
     }
 }

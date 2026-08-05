@@ -5,20 +5,20 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Student extends Model
+class Teacher extends Model
 {
     use HasFactory;
 
-    // ڕێگەدان بە پاشەکەوتکردنی ئەم خانانە
     protected $fillable = [
         'full_name',
-        'gender',
-        'date_of_birth',
-        'education_level',
+        'subjects',
+        'certificates',
         'phone_number',
+        'date_of_birth',
         'address',
         'join_date',
-        'study_type',
+        'experience',
         'marital_status',
+        'notes',
     ];
 }

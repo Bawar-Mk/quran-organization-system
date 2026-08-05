@@ -16,7 +16,7 @@
                     </x-nav-link>
                     @hasanyrole('Admin|Normal_User')
                         <x-nav-link :href="route('students.index')" class="dark:text-gray-100 dark:hover:text-white">خوێندکار</x-nav-link>
-                        <x-nav-link href="#" class="dark:text-gray-100 dark:hover:text-white">مامۆستا</x-nav-link>
+                        <x-nav-link :href="route('teachers.index')" class="dark:text-gray-100 dark:hover:text-white">مامۆستا</x-nav-link>
                         <x-nav-link href="#" class="dark:text-gray-100 dark:hover:text-white">هاتووچۆ</x-nav-link>
                         <x-nav-link href="#" class="dark:text-gray-100 dark:hover:text-white">دارایی</x-nav-link>
                         <x-nav-link href="#" class="dark:text-gray-100 dark:hover:text-white">شەهادە و
