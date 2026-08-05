@@ -8,27 +8,18 @@ return new class extends Migration
 {
     public function up(): void
     {
-        // یەکەم: دروستکردنی خشتەی مامۆستایان بۆ ئەوەی پێش بەکارهێنەر ئامادە بێت
-        Schema::create('teachers', function (Blueprint $table) {
-            $table->id();
-            $table->string('full_name');
-            $table->string('phone_number')->nullable();
-            $table->string('specialty')->nullable();
-            $table->timestamps();
-        });
-
-        // دووەم: دروستکردنی خشتەی بەکارهێنەران و بەستنەوەی بە مامۆستاوە
+        // دروستکردنی خشتەی بەکارهێنەران
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('username')->unique(); // بەکارهێنانی یوزەرنەیم
+            $table->string('username')->unique();
             $table->string('password');
-            $table->foreignId('teacher_id')->nullable()->constrained('teachers')->nullOnDelete();
+            // لێرە تەنها خانەکە دروست دەکەین، پەیوەندییەکە لە فایلی مامۆستایان دەبەستین
+            $table->unsignedBigInteger('teacher_id')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });
 
-        // سێیەم: خشتە بنەڕەتییەکانی تری لاراڤێڵ
         Schema::create('password_reset_tokens', function (Blueprint $table) {
             $table->string('email')->primary();
             $table->string('token');
@@ -50,6 +41,5 @@ return new class extends Migration
         Schema::dropIfExists('sessions');
         Schema::dropIfExists('password_reset_tokens');
         Schema::dropIfExists('users');
-        Schema::dropIfExists('teachers');
     }
 };

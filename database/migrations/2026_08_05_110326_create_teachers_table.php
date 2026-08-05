@@ -8,6 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
+        // ١- سەرەتا خشتەی مامۆستایان دروست دەکەین
         Schema::create('teachers', function (Blueprint $table) {
             $table->id();
             $table->string('full_name');
@@ -22,10 +23,20 @@ return new class extends Migration
             $table->text('notes')->nullable();
             $table->timestamps();
         });
+
+        // ٢- پاشان پەیوەندییەکە دەبەستین لەگەڵ خشتەی بەکارهێنەران (users)
+        Schema::table('users', function (Blueprint $table) {
+            $table->foreign('teacher_id')->references('id')->on('teachers')->nullOnDelete();
+        });
     }
 
     public function down(): void
     {
+        // لە کاتی سڕینەوە، سەرەتا پەیوەندییەکە دەپچڕێنین ئینجا خشتەکە دەسڕینەوە
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropForeign(['teacher_id']);
+        });
+
         Schema::dropIfExists('teachers');
     }
 };

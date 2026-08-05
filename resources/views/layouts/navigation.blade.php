@@ -18,13 +18,13 @@
                         <x-nav-link :href="route('students.index')" class="dark:text-gray-100 dark:hover:text-white">خوێندکار</x-nav-link>
                         <x-nav-link :href="route('teachers.index')" class="dark:text-gray-100 dark:hover:text-white">مامۆستا</x-nav-link>
                         <x-nav-link href="#" class="dark:text-gray-100 dark:hover:text-white">هاتووچۆ</x-nav-link>
-                        <x-nav-link href="#" class="dark:text-gray-100 dark:hover:text-white">دارایی</x-nav-link>
+                        <x-nav-link :href="route('finance.index')" class="dark:text-gray-100 dark:hover:text-white">دارایی</x-nav-link>
                         <x-nav-link href="#" class="dark:text-gray-100 dark:hover:text-white">شەهادە و
                             سەنەد</x-nav-link>
                     @endhasanyrole
 
                     @hasanyrole('Admin|Normal_User|Teacher')
-                        <x-nav-link href="#" class="dark:text-gray-100 dark:hover:text-white">وانەکان</x-nav-link>
+                        <x-nav-link :href="route('lessons.index')" class="dark:text-gray-100 dark:hover:text-white">وانەکان</x-nav-link>
                         <x-nav-link href="#" class="dark:text-gray-100 dark:hover:text-white">ئامادەبوون</x-nav-link>
                     @endhasanyrole
 

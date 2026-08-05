@@ -21,4 +21,8 @@ class Student extends Model
         'study_type',
         'marital_status',
     ];
+    public function lessons()
+    {
+        return $this->belongsToMany(Lesson::class)->withPivot('is_paid', 'score')->withTimestamps();
+    }
 }

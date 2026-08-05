@@ -10,15 +10,22 @@ class Teacher extends Model
     use HasFactory;
 
     protected $fillable = [
+        'user_id', // ئەمەمان زیاد کرد
         'full_name',
-        'subjects',
-        'certificates',
         'phone_number',
         'date_of_birth',
-        'address',
+        'marital_status',
         'join_date',
         'experience',
-        'marital_status',
+        'subjects',
+        'certificates',
+        'address',
         'notes',
     ];
+
+    // پەیوەندی مامۆستا بە یوزەرەوە
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

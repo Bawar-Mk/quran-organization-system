@@ -8,6 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
+        // لێرە تەنها خشتەی students دروست دەکرێت
         Schema::create('students', function (Blueprint $table) {
             $table->id();
             $table->string('full_name');

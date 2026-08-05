@@ -83,6 +83,57 @@
             });
         }
     </script>
+
+    <!-- کۆدی سویت ئەلێرت بۆ پەیامەکان -->
+    @if (session('success'))
+        <script type="module">
+            document.addEventListener('DOMContentLoaded', function() {
+                Swal.fire({
+                    title: 'سەرکەوتوو بوو!',
+                    text: "{{ session('success') }}",
+                    icon: 'success',
+                    confirmButtonText: 'باشە',
+                    confirmButtonColor: '#3085d6',
+                });
+            });
+        </script>
+    @endif
+
+    @if (session('error'))
+        <script type="module">
+            document.addEventListener('DOMContentLoaded', function() {
+                Swal.fire({
+                    title: 'هەڵەیەک ڕوویدا!',
+                    text: "{{ session('error') }}",
+                    icon: 'error',
+                    confirmButtonText: 'باشە',
+                    confirmButtonColor: '#d33',
+                });
+            });
+        </script>
+    @endif
+
+    <!-- فەنکشنی گشتی بۆ SweetAlert لەکاتی سڕینەوە و ئاگادارکردنەوە -->
+    <script type="module">
+        window.confirmAction = function(event, form, title, text, icon = 'warning', confirmButtonText =
+            'بەڵێ، جێبەجێی بکە!', confirmButtonColor = '#d33') {
+            event.preventDefault(); // ڕاگرتنی فۆڕمەکە
+            Swal.fire({
+                title: title,
+                text: text,
+                icon: icon,
+                showCancelButton: true,
+                confirmButtonColor: confirmButtonColor,
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: confirmButtonText,
+                cancelButtonText: 'پاشگەزبوونەوە'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit(); // ناردنی فۆڕمەکە ئەگەر دوگمەی بەڵێ داگیرا
+                }
+            });
+        }
+    </script>
 </body>
 
 </html>

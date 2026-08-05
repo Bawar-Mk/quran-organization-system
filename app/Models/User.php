@@ -14,10 +14,14 @@ class User extends Authenticatable
 
     protected $fillable = [
         'name',
-        'username',
+        'email',
         'password',
-        'teacher_id',
+        'role', // ئەمەمان زیاد کرد
     ];
 
-    // ... کۆدەکانی تر وەک خۆی لێ بگەڕێ
+    // پەیوەندی نێوان یوزەر و مامۆستا
+    public function teacher()
+    {
+        return $this->hasOne(Teacher::class);
+    }
 }

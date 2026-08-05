@@ -12,12 +12,9 @@ class TeacherController extends Controller
         $query = Teacher::query();
 
         if ($request->filled('search')) {
-            $search = $request->search;
-            $query->where(function ($q) use ($search) {
-                $q->where('full_name', 'like', "%{$search}%")
-                    ->orWhere('phone_number', 'like', "%{$search}%")
-                    ->orWhere('subjects', 'like', "%{$search}%");
-            });
+            $query->where('full_name', 'like', '%' . $request->search . '%')
+                ->orWhere('phone_number', 'like', '%' . $request->search . '%')
+                ->orWhere('subjects', 'like', '%' . $request->search . '%');
         }
 
         if ($request->filled('marital_status') && $request->marital_status !== 'هەردووکی') {
@@ -33,31 +30,57 @@ class TeacherController extends Controller
     {
         $validated = $request->validate([
             'full_name' => 'required|string|max:255',
-            'subjects' => 'nullable|string',
-            'certificates' => 'nullable|string',
             'phone_number' => 'nullable|string',
             'date_of_birth' => 'nullable|date',
-            'address' => 'nullable|string',
+            'marital_status' => 'nullable|string',
             'join_date' => 'nullable|date',
             'experience' => 'nullable|string',
-            'marital_status' => 'nullable|string',
+            'subjects' => 'nullable|string',
+            'certificates' => 'nullable|string',
+            'address' => 'nullable|string',
             'notes' => 'nullable|string',
         ]);
 
         Teacher::create($validated);
-        return redirect()->route('teachers.index')->with('success', 'مامۆستا بە سەرکەوتوویی زیادکرا.');
+        return redirect()->route('teachers.index')->with('success', 'مامۆستا بە سەرکەوتوویی تۆمارکرا.');
     }
 
-    public function show($id)
+    public function show(Request $request, Teacher $teacher)
     {
-        $teacher = Teacher::findOrFail($id);
-        return view('teachers.show', compact('teacher'));
+        $query = $teacher->lessons()->withCount('students');
+
+        if ($request->filled('lesson_name')) {
+            $query->where('name', 'like', '%' . $request->lesson_name . '%');
+        }
+
+        $lessons = $query->latest('start_date')->paginate(10)->appends($request->all());
+
+        return view('teachers.show', compact('teacher', 'lessons'));
     }
 
-    public function destroy($id)
+    // فەنکشنی سەیڤکردنی گۆڕانکارییەکان لە ڕێگەی مۆدڵەکەوە
+    public function update(Request $request, Teacher $teacher)
     {
-        $teacher = Teacher::findOrFail($id);
+        $validated = $request->validate([
+            'full_name' => 'required|string|max:255',
+            'phone_number' => 'nullable|string',
+            'date_of_birth' => 'nullable|date',
+            'marital_status' => 'nullable|string',
+            'join_date' => 'nullable|date',
+            'experience' => 'nullable|string',
+            'subjects' => 'nullable|string',
+            'certificates' => 'nullable|string',
+            'address' => 'nullable|string',
+            'notes' => 'nullable|string',
+        ]);
+
+        $teacher->update($validated);
+        return redirect()->route('teachers.index')->with('success', 'زانیارییەکانی مامۆستا بە سەرکەوتوویی نوێکرایەوە.');
+    }
+
+    public function destroy(Teacher $teacher)
+    {
         $teacher->delete();
-        return redirect()->route('teachers.index')->with('success', 'مامۆستا بە سەرکەوتوویی سڕایەوە.');
+        return redirect()->route('teachers.index')->with('success', 'مامۆستاکە بە سەرکەوتوویی سڕایەوە.');
     }
 }
