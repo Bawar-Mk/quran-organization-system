@@ -10,16 +10,16 @@ return new class extends Migration
     {
         Schema::create('teachers', function (Blueprint $table) {
             $table->id();
-            $table->string('full_name'); // ١- ناوی تەواوی
-            $table->string('subjects')->nullable(); // ٢- وانەکان (جارێ وەک تێکست)
-            $table->text('certificates')->nullable(); // ٣- بڕوانامەکان
-            $table->string('phone_number')->nullable(); // ٤- ژمارەی مۆبایل
-            $table->date('date_of_birth')->nullable(); // ٥- بەرواری لەدایکبوون
-            $table->text('address')->nullable(); // ٦- ناونیشان
-            $table->date('join_date')->nullable(); // ٧- بەرواری پەیوەندی بە ڕێکخراو
-            $table->string('experience')->nullable(); // ٨- ئەزموونی وانەوتنەوە
-            $table->string('marital_status')->nullable(); // ٩- باری خێزانداری
-            $table->text('notes')->nullable(); // ١٠- تێبینی
+            $table->string('full_name');
+            $table->string('subjects')->nullable();
+            $table->text('certificates')->nullable();
+            $table->string('phone_number')->nullable();
+            $table->date('date_of_birth')->nullable();
+            $table->text('address')->nullable();
+            $table->date('join_date')->nullable();
+            $table->string('experience')->nullable();
+            $table->string('marital_status')->nullable();
+            $table->text('notes')->nullable();
             $table->timestamps();
         });
     }
