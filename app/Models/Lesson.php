@@ -17,7 +17,7 @@ class Lesson extends Model
         'schedule',
         'passing_score',
         'status',
-        'notes'
+        'certificate_template', // ئەمەمان زیاد کرد
     ];
 
     public function teacher()

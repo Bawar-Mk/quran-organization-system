@@ -18,6 +18,11 @@ Route::get('/', function () {
 
 // لێرەدا 'verified' مان لابرد چونکە ئیمەیڵمان پێویست نییە
 Route::middleware(['auth'])->group(function () {
+
+    // ڕاوتەکانی خەزنکردن و هێنانەوەی تێمپلەیتی بڕوانامە
+    Route::get('/certificate-presets', [LessonController::class, 'getPresets'])->name('presets.index');
+    Route::post('/certificate-presets', [LessonController::class, 'storePreset'])->name('presets.store');
+    Route::delete('/certificate-presets/{id}', [LessonController::class, 'destroyPreset'])->name('presets.destroy');
     // ڕاوتەکانی بەشی پاشەکەوتکردن (باکئەپ)
     Route::get('/backup', [BackupController::class, 'index'])->name('backup.index');
     Route::post('/backup/create', [BackupController::class, 'createBackup'])->name('backup.create');
@@ -39,6 +44,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::get('/finance', [FinanceController::class, 'index'])->name('finance.index');
+    Route::post('/finance/transaction', [FinanceController::class, 'storeTransaction'])->name('finance.storeTransaction'); // ئەمە
+    Route::delete('/finance/transaction/{transaction}', [FinanceController::class, 'destroyTransaction'])->name('finance.destroyTransaction'); // وە ئەمە
 
     Route::resource('students', StudentController::class);
     Route::resource('teachers', TeacherController::class);

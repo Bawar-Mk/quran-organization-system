@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CertificatePreset;
+use Illuminate\Support\Facades\Storage;
 use App\Models\Lesson;
 use App\Models\Teacher;
 use App\Models\Student;
@@ -26,17 +28,20 @@ class LessonController extends Controller
             'teacher_id' => 'required|exists:teachers,id',
             'start_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:start_date',
-            'days' => 'required|array|min:1', // وەرگرتنی ڕۆژەکان بە شێوەی ئەرەی
-            'time' => 'required', // وەرگرتنی کاتژمێر
+            'days' => 'required|array|min:1',
+            'time' => 'required',
             'passing_score' => 'required|integer|min:0|max:100',
-            'notes' => 'nullable|string',
+            'certificate_template' => 'nullable|image|mimes:jpeg,png,jpg|max:5120', // زیادکراو
         ]);
 
-        // تێکەڵکردنی ڕۆژەکان و کاتەکە بۆ ناو یەک ستوون بۆ داتابەیسەکە
         $schedule = implode(' و ', $request->days) . ' - کاتژمێر ' . date('h:i A', strtotime($request->time));
-
         $validated['schedule'] = $schedule;
         unset($validated['days'], $validated['time']);
+
+        // سەیڤکردنی وێنەی تێمپلەیتەکە ئەگەر هەبوو
+        if ($request->hasFile('certificate_template')) {
+            $validated['certificate_template'] = $request->file('certificate_template')->store('certificates', 'public');
+        }
 
         Lesson::create($validated);
         return redirect()->route('lessons.index')->with('success', 'وانە بە سەرکەوتوویی دروستکرا.');
@@ -60,12 +65,20 @@ class LessonController extends Controller
             'days' => 'required|array|min:1',
             'time' => 'required',
             'passing_score' => 'required|integer|min:0|max:100',
+            'certificate_template' => 'nullable|image|mimes:jpeg,png,jpg|max:5120', // زیادکراو
         ]);
 
         $schedule = implode(' و ', $request->days) . ' - کاتژمێر ' . date('h:i A', strtotime($request->time));
-
         $validated['schedule'] = $schedule;
         unset($validated['days'], $validated['time']);
+
+        // سەیڤکردنی وێنەی نوێ و سڕینەوەی کۆنەکە
+        if ($request->hasFile('certificate_template')) {
+            if ($lesson->certificate_template) {
+                Storage::disk('public')->delete($lesson->certificate_template);
+            }
+            $validated['certificate_template'] = $request->file('certificate_template')->store('certificates', 'public');
+        }
 
         $lesson->update($validated);
         return back()->with('success', 'زانیارییەکانی وانەکە بە سەرکەوتوویی نوێکرایەوە.');
@@ -103,15 +116,66 @@ class LessonController extends Controller
         return back()->with('success', 'خوێندکارەکە لە وانەکە سڕایەوە.');
     }
 
-    public function printCertificate(Lesson $lesson, Student $student)
+    public function certificate(Lesson $lesson, Student $student)
     {
-        $enrollment = $lesson->students()->where('student_id', $student->id)->first();
-        if (!$enrollment) {
-            return redirect()->back()->with('error', 'ئەم خوێندکارە بەشدار نییە لەم خولەدا.');
+        $enrollment = DB::table('lesson_student')
+            ->where('lesson_id', $lesson->id)
+            ->where('student_id', $student->id)
+            ->first();
+
+        if (!$enrollment || $enrollment->score < $lesson->passing_score) {
+            return redirect()->back()->with('error', 'ئەم خوێندکارە نمرەی دەرچوونی بەدەست نەهێناوە.');
         }
-        if ($enrollment->pivot->score < $lesson->passing_score) {
-            return redirect()->back()->with('error', 'ئەم خوێندکارە مافی وەرگرتنی بڕوانامەی نییە.');
+
+        // --- ئەم بەشە نوێیە بۆ خوێندنەوەی فۆنتەکان لە فۆڵدەری public/fonts ---
+        $fonts = [];
+        $fontsPath = public_path('fonts');
+        if (\Illuminate\Support\Facades\File::exists($fontsPath)) {
+            $files = \Illuminate\Support\Facades\File::files($fontsPath);
+            foreach ($files as $file) {
+                if (in_array($file->getExtension(), ['ttf', 'woff', 'woff2', 'otf'])) {
+                    $fontName = pathinfo($file->getFilename(), PATHINFO_FILENAME);
+                    $fonts[] = [
+                        'name' => $fontName,
+                        'file' => $file->getFilename()
+                    ];
+                }
+            }
         }
-        return view('lessons.certificate', compact('lesson', 'student', 'enrollment'));
+        // ---------------------------------------------------------------------
+
+        // زیادکردنی داتای فۆنتەکان بۆ ڤیووەکە
+        return view('lessons.certificate', [
+            'lesson' => $lesson,
+            'student' => $student,
+            'enrollment' => collect(['pivot' => $enrollment]),
+            'availableFonts' => $fonts // ئەم گۆڕاوەمان بۆ زیاد کرد
+        ]);
+    }
+    public function getPresets()
+    {
+        return response()->json(CertificatePreset::all());
+    }
+
+    public function storePreset(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'data' => 'required|array',
+        ]);
+
+        // بەکارهێنانی updateOrCreate بۆ ئەوەی ئەگەر هەمان ناو بوو، تەنها ئۆڤەڕایدی بکات
+        $preset = CertificatePreset::updateOrCreate(
+            ['name' => $request->name],
+            ['data' => $request->data]
+        );
+
+        return response()->json(['success' => true]);
+    }
+
+    public function destroyPreset($id)
+    {
+        CertificatePreset::destroy($id);
+        return response()->json(['success' => true]);
     }
 }
