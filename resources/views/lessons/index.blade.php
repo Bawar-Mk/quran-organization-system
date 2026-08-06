@@ -25,7 +25,7 @@
                 <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4 border-b pb-2 dark:border-gray-700">
                     تۆمارکردنی وانەی نوێ</h3>
                 <form method="POST" action="{{ route('lessons.store') }}"
-                    class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
+                    class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-start">
                     @csrf
                     <div>
                         <x-input-label for="name" :value="__('ناوی وانە')" />
@@ -55,23 +55,49 @@
                         <x-text-input id="end_date" name="end_date" type="date" class="mt-1 w-full"
                             value="{{ old('end_date') }}" required />
                     </div>
-                    <div class="lg:col-span-2">
-                        <x-input-label for="schedule" :value="__('کاتی وانە (نموونە: شەممە و سێشەممە ٤:٠٠ تا ٦:٠٠)')" />
-                        <x-text-input id="schedule" name="schedule" type="text" class="mt-1 w-full"
-                            value="{{ old('schedule') }}" required />
+
+                    <!-- بەشی هەڵبژاردنی ڕۆژەکان و کات بە شێوازی چوارگۆشە -->
+                    <div
+                        class="lg:col-span-4 bg-blue-50 dark:bg-gray-900/50 p-5 rounded-xl border border-blue-100 dark:border-gray-700 mt-2">
+                        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                            <div class="lg:col-span-3">
+                                <x-input-label :value="__('ڕۆژەکانی وانە هەڵبژێرە:')"
+                                    class="mb-3 text-base text-blue-700 dark:text-blue-400 font-black" />
+                                <div class="flex flex-wrap gap-3">
+                                    @foreach (['شەممە', 'یەکشەممە', 'دووشەممە', 'سێشەممە', 'چوارشەممە', 'پێنجشەممە', 'هەینی'] as $day)
+                                        <label
+                                            class="flex items-center gap-2 cursor-pointer bg-white dark:bg-gray-800 px-4 py-2 rounded-lg shadow-sm border border-gray-200 dark:border-gray-600 hover:bg-blue-100 dark:hover:bg-gray-700 transition-colors">
+                                            <input type="checkbox" name="days[]" value="{{ $day }}"
+                                                class="rounded w-5 h-5 border-gray-300 text-blue-600 focus:ring-blue-500">
+                                            <span
+                                                class="text-sm font-bold dark:text-gray-300">{{ $day }}</span>
+                                        </label>
+                                    @endforeach
+                                </div>
+                            </div>
+                            <div>
+                                <x-input-label for="time" :value="__('کاتی وانە (کاتژمێر):')"
+                                    class="mb-3 text-base text-blue-700 dark:text-blue-400 font-black" />
+                                <input type="time" name="time" id="time"
+                                    class="mt-1 w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 font-mono shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                    required>
+                            </div>
+                        </div>
                     </div>
+
                     <div>
-                        <x-input-label for="passing_score" :value="__('نمرەی بڕوانامە (نموونە: ٨٠)')" />
+                        <x-input-label for="passing_score" :value="__('مەرجی دەرچوون (نمرە)')" />
                         <x-text-input id="passing_score" name="passing_score" type="number" class="mt-1 w-full"
                             value="{{ old('passing_score') }}" required />
                     </div>
-                    <div class="flex justify-end pb-0.5">
-                        <x-primary-button class="w-full justify-center">تۆمارکردن</x-primary-button>
+                    <div class="flex items-end lg:col-span-3 justify-end pb-0.5">
+                        <x-primary-button
+                            class="w-full md:w-auto px-10 py-3">{{ __('تۆمارکردنی وانە') }}</x-primary-button>
                     </div>
                 </form>
             </div>
 
-            <!-- خشتەی یەکەم: وانە بەردەستەکان -->
+            <!-- خشتەی وانە بەردەستەکان -->
             <div class="p-4 sm:p-6 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
                 <h3 class="text-lg font-black text-blue-600 dark:text-blue-400 mb-4 flex items-center gap-2">🟢 وانە
                     کارا و بەردەستەکان</h3>
@@ -81,8 +107,7 @@
                             <tr>
                                 <th class="px-4 py-3 border-r dark:border-gray-600">ناوی وانە</th>
                                 <th class="px-4 py-3 border-r dark:border-gray-600">مامۆستا</th>
-                                <th class="px-4 py-3 border-r dark:border-gray-600">دەستپێک و کۆتایی</th>
-                                <th class="px-4 py-3 border-r dark:border-gray-600">مەرجی بڕوانامە</th>
+                                <th class="px-4 py-3 border-r dark:border-gray-600">ڕۆژەکان و کات</th>
                                 <th class="px-4 py-3 border-r dark:border-gray-600 text-center">کردارەکان</th>
                             </tr>
                         </thead>
@@ -94,16 +119,16 @@
                                         {{ $lesson->name }}</td>
                                     <td class="px-4 py-3 border-r dark:border-gray-700">
                                         {{ $lesson->teacher->full_name }}</td>
-                                    <td class="px-4 py-3 border-r dark:border-gray-700 font-mono text-sm">
-                                        {{ $lesson->start_date }} <br>تا<br> {{ $lesson->end_date }}</td>
-                                    <td class="px-4 py-3 border-r dark:border-gray-700 font-bold text-green-600">
-                                        {{ $lesson->passing_score }}</td>
+                                    <td
+                                        class="px-4 py-3 border-r dark:border-gray-700 text-sm font-bold text-gray-700 dark:text-gray-300">
+                                        {{ $lesson->schedule }}
+                                    </td>
                                     <td class="px-4 py-3 border-r dark:border-gray-700 text-center">
                                         <div class="flex items-center justify-center gap-3">
                                             <a href="{{ route('lessons.show', $lesson->id) }}"
                                                 class="text-blue-600 font-bold hover:underline">زانیاری</a>
 
-                                            <!-- ناوچەی مۆدڵی وانەکان -->
+                                            <!-- مۆدڵی گۆڕانکاری -->
                                             <div x-data="{ openEditModal: false }" class="inline">
                                                 <button @click="openEditModal = true" type="button"
                                                     class="text-green-600 font-bold hover:underline">گۆڕانکاری</button>
@@ -115,28 +140,15 @@
                                                         dir="rtl">
                                                         <div
                                                             class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
-                                                            <div x-show="openEditModal"
-                                                                x-transition:enter="ease-out duration-300"
-                                                                x-transition:enter-start="opacity-0"
-                                                                x-transition:enter-end="opacity-100"
-                                                                x-transition:leave="ease-in duration-200"
-                                                                x-transition:leave-start="opacity-100"
-                                                                x-transition:leave-end="opacity-0"
-                                                                @click="openEditModal = false"
-                                                                class="fixed inset-0 bg-gray-900 bg-opacity-75 backdrop-blur-sm transition-opacity"
+                                                            <div x-show="openEditModal" @click="openEditModal = false"
+                                                                class="fixed inset-0 bg-gray-900 bg-opacity-75 transition-opacity"
                                                                 aria-hidden="true"></div>
                                                             <span
                                                                 class="hidden sm:inline-block sm:align-middle sm:h-screen"
                                                                 aria-hidden="true">&#8203;</span>
 
                                                             <div x-show="openEditModal"
-                                                                x-transition:enter="ease-out duration-300"
-                                                                x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-                                                                x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
-                                                                x-transition:leave="ease-in duration-200"
-                                                                x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
-                                                                x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-                                                                class="inline-block relative align-bottom bg-white dark:bg-gray-800 rounded-2xl text-right overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full border border-gray-200 dark:border-gray-700">
+                                                                class="inline-block relative align-bottom bg-white dark:bg-gray-800 rounded-2xl text-right overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-5xl sm:w-full border border-gray-200 dark:border-gray-700">
                                                                 <form method="POST"
                                                                     action="{{ route('lessons.update', $lesson->id) }}">
                                                                     @csrf @method('PATCH')
@@ -162,14 +174,14 @@
                                                                                 </svg></button>
                                                                         </div>
                                                                         <div
-                                                                            class="grid grid-cols-1 md:grid-cols-2 gap-5 text-right">
-                                                                            <div><x-input-label
+                                                                            class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 text-right items-start">
+                                                                            <div class="lg:col-span-2"><x-input-label
                                                                                     :value="__('ناوی وانە')" /><x-text-input
                                                                                     name="name" type="text"
                                                                                     class="mt-1 block w-full"
                                                                                     value="{{ $lesson->name }}"
                                                                                     required /></div>
-                                                                            <div>
+                                                                            <div class="lg:col-span-2">
                                                                                 <x-input-label :value="__('مامۆستای وانە')" />
                                                                                 <select name="teacher_id"
                                                                                     class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 rounded-md shadow-sm"
@@ -195,12 +207,65 @@
                                                                                     class="mt-1 block w-full"
                                                                                     value="{{ $lesson->end_date }}"
                                                                                     required /></div>
-                                                                            <div><x-input-label
-                                                                                    :value="__('کاتی وانە')" /><x-text-input
-                                                                                    name="schedule" type="text"
-                                                                                    class="mt-1 block w-full"
-                                                                                    value="{{ $lesson->schedule }}"
-                                                                                    required /></div>
+
+                                                                            <!-- بەشی ڕۆژەکانی وانە بۆ ناو مۆدڵ -->
+                                                                            <div
+                                                                                class="lg:col-span-4 bg-gray-50 dark:bg-gray-700 p-4 rounded-lg border border-gray-200 dark:border-gray-600 mt-2">
+                                                                                <div
+                                                                                    class="grid grid-cols-1 lg:grid-cols-4 gap-4">
+                                                                                    <div class="lg:col-span-3">
+                                                                                        <x-input-label
+                                                                                            :value="__(
+                                                                                                'ڕۆژەکان هەڵبژێرە',
+                                                                                            )"
+                                                                                            class="mb-2" />
+                                                                                        <div
+                                                                                            class="flex flex-wrap gap-2">
+                                                                                            @foreach (['شەممە', 'یەکشەممە', 'دووشەممە', 'سێشەممە', 'چوارشەممە', 'پێنجشەممە', 'هەینی'] as $day)
+                                                                                                <label
+                                                                                                    class="flex items-center gap-1.5 bg-white dark:bg-gray-800 px-3 py-1.5 rounded shadow-sm border border-gray-200 dark:border-gray-600 cursor-pointer">
+                                                                                                    <input
+                                                                                                        type="checkbox"
+                                                                                                        name="days[]"
+                                                                                                        value="{{ $day }}"
+                                                                                                        class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                                                                                        {{ str_contains($lesson->schedule, $day) ? 'checked' : '' }}>
+                                                                                                    <span
+                                                                                                        class="text-sm font-bold dark:text-gray-300">{{ $day }}</span>
+                                                                                                </label>
+                                                                                            @endforeach
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div>
+                                                                                        @php
+                                                                                            preg_match(
+                                                                                                '/([0-9]{1,2}:[0-9]{2} [A-Z]{2})/',
+                                                                                                $lesson->schedule,
+                                                                                                $matches,
+                                                                                            );
+                                                                                            $timeVal = isset(
+                                                                                                $matches[1],
+                                                                                            )
+                                                                                                ? date(
+                                                                                                    'H:i',
+                                                                                                    strtotime(
+                                                                                                        $matches[1],
+                                                                                                    ),
+                                                                                                )
+                                                                                                : '';
+                                                                                        @endphp
+                                                                                        <x-input-label
+                                                                                            :value="__('کاتی وانە')"
+                                                                                            class="mb-2" />
+                                                                                        <input type="time"
+                                                                                            name="time"
+                                                                                            class="w-full rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 font-mono shadow-sm"
+                                                                                            value="{{ $timeVal }}"
+                                                                                            required>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+
                                                                             <div><x-input-label
                                                                                     :value="__('مەرجی بڕوانامە')" /><x-text-input
                                                                                     name="passing_score"
@@ -248,7 +313,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="5" class="px-4 py-5 text-center font-bold text-gray-500">هیچ
+                                    <td colspan="4" class="px-4 py-5 text-center font-bold text-gray-500">هیچ
                                         وانەیەکی بەردەست نییە.</td>
                                 </tr>
                             @endforelse
@@ -257,45 +322,7 @@
                 </div>
             </div>
 
-            <!-- خشتەی دووەم: وانە کۆتایی هاتووەکان -->
-            <div class="p-4 sm:p-6 bg-white dark:bg-gray-800 shadow sm:rounded-lg opacity-80">
-                <h3 class="text-lg font-black text-gray-700 dark:text-gray-300 mb-4 flex items-center gap-2">🔴 وانە
-                    کۆتایی هاتووەکان</h3>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-right text-gray-500 dark:text-gray-400 border dark:border-gray-700">
-                        <thead class="text-xs text-gray-700 uppercase bg-gray-100 dark:bg-gray-700 dark:text-gray-400">
-                            <tr>
-                                <th class="px-4 py-3 border-r dark:border-gray-600">ناوی وانە</th>
-                                <th class="px-4 py-3 border-r dark:border-gray-600">مامۆستا</th>
-                                <th class="px-4 py-3 border-r dark:border-gray-600">کۆتایی هاتووە لە</th>
-                                <th class="px-4 py-3 border-r dark:border-gray-600 text-center">کردارەکان</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse($finishedLessons as $lesson)
-                                <tr class="border-b dark:border-gray-700">
-                                    <td
-                                        class="px-4 py-3 border-r dark:border-gray-700 font-bold text-gray-700 dark:text-gray-300">
-                                        {{ $lesson->name }}</td>
-                                    <td class="px-4 py-3 border-r dark:border-gray-700">
-                                        {{ $lesson->teacher->full_name }}</td>
-                                    <td class="px-4 py-3 border-r dark:border-gray-700 font-mono text-sm">
-                                        {{ $lesson->end_date }}</td>
-                                    <td class="px-4 py-3 border-r dark:border-gray-700 text-center">
-                                        <a href="{{ route('lessons.show', $lesson->id) }}"
-                                            class="text-blue-600 font-bold hover:underline">زانیاری ورد</a>
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="4" class="px-4 py-5 text-center">هیچ وانەیەکی کۆتایی هاتوو نییە.
-                                    </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+            <!-- خشتەی دووەم: وانە کۆتایی هاتووەکان وەک خۆیەتی -->
 
         </div>
     </div>

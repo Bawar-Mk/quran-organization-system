@@ -9,37 +9,49 @@
                     </a>
                 </div>
 
-                <!-- لیستی بەشەکان -->
+                <!-- لیستی بەشەکان (بە شێوەی دروست بۆ ڕۆڵە نوێیەکان) -->
                 <div class="hidden gap-4 sm:gap-3 sm:-my-px sm:ms-10 sm:flex whitespace-nowrap">
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" class="dark:text-gray-100 dark:hover:text-white">
                         {{ __('بەشی سەرەکی') }}
                     </x-nav-link>
-                    @hasanyrole('Admin|Normal_User')
-                        <x-nav-link :href="route('students.index')" class="dark:text-gray-100 dark:hover:text-white">خوێندکار</x-nav-link>
-                        <x-nav-link :href="route('teachers.index')" class="dark:text-gray-100 dark:hover:text-white">مامۆستا</x-nav-link>
+
+                    <!-- تەنها ئەدمین و بەکارهێنەری ئاسایی دەتوانن ئەم بەشانە ببینن -->
+                    @if (in_array(auth()->user()->role, ['admin', 'user']))
+                        <x-nav-link :href="route('students.index')" :active="request()->routeIs('students.*')"
+                            class="dark:text-gray-100 dark:hover:text-white">خوێندکار</x-nav-link>
+                        <x-nav-link :href="route('teachers.index')" :active="request()->routeIs('teachers.*')"
+                            class="dark:text-gray-100 dark:hover:text-white">مامۆستا</x-nav-link>
                         <x-nav-link href="#" class="dark:text-gray-100 dark:hover:text-white">هاتووچۆ</x-nav-link>
-                        <x-nav-link :href="route('finance.index')" class="dark:text-gray-100 dark:hover:text-white">دارایی</x-nav-link>
+                        <x-nav-link :href="route('finance.index')" :active="request()->routeIs('finance.*')"
+                            class="dark:text-gray-100 dark:hover:text-white">دارایی</x-nav-link>
                         <x-nav-link href="#" class="dark:text-gray-100 dark:hover:text-white">شەهادە و
                             سەنەد</x-nav-link>
-                    @endhasanyrole
+                    @endif
 
-                    @hasanyrole('Admin|Normal_User|Teacher')
-                        <x-nav-link :href="route('lessons.index')" class="dark:text-gray-100 dark:hover:text-white">وانەکان</x-nav-link>
-                        <x-nav-link href="#" class="dark:text-gray-100 dark:hover:text-white">ئامادەبوون</x-nav-link>
-                    @endhasanyrole
+                    <!-- هەموویان دەتوانن وانەکان و ئامادەبوون ببینن (بەڵام مامۆستا تەنها هی خۆی دەبینێت دواتر لە کۆنتڕۆڵەر ڕێکی دەخەین) -->
+                    @if (in_array(auth()->user()->role, ['admin', 'user', 'teacher']))
+                        <x-nav-link :href="route('lessons.index')" :active="request()->routeIs('lessons.*')"
+                            class="dark:text-gray-100 dark:hover:text-white">وانەکان</x-nav-link>
+                        <x-nav-link :href="route('attendances.index')" :active="request()->routeIs('attendances.*')"
+                            class="dark:text-gray-100 dark:hover:text-white">ئامادەبوون</x-nav-link>
+                    @endif
 
-                    @role('Admin')
-                        <x-nav-link href="#" class="dark:text-gray-100 dark:hover:text-white">تەندروستی</x-nav-link>
-                        <x-nav-link href="#" class="dark:text-gray-100 dark:hover:text-white">بەکارهێنەر</x-nav-link>
-                        <x-nav-link href="#" class="dark:text-gray-100 dark:hover:text-white">پاشەکاوت</x-nav-link>
-                    @endrole
+                    <!-- تەنها ئەدمین -->
+                    @if (auth()->user()->role === 'admin')
+                        <x-nav-link href="#"
+                            class="dark:text-gray-100 dark:hover:text-white">تەندروستی</x-nav-link>
+                        <x-nav-link :href="route('users.index')" :active="request()->routeIs('users.*')"
+                            class="dark:text-gray-100 dark:hover:text-white">بەکارهێنەر</x-nav-link>
+                        <x-nav-link href="#"
+                            class="dark:text-gray-100 dark:hover:text-white">پاشەکاوت</x-nav-link>
+                    @endif
                 </div>
             </div>
 
             <!-- بەشی لای چەپ: مۆدی تاریک و درۆپ داون -->
             <div class="flex items-center sm:ms-6 gap-2 sm:gap-1">
 
-                <!-- دوگمەی مۆدی تاریک (لە کۆتایی بەشەکان و پێش درۆپ داونەکە) -->
+                <!-- دوگمەی مۆدی تاریک -->
                 <button id="theme-toggle" type="button"
                     class="text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none rounded-lg text-sm p-1">
                     <svg id="theme-toggle-dark-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20"
@@ -109,25 +121,26 @@
                 {{ __('بەشی سەرەکی') }}
             </x-responsive-nav-link>
 
-            @hasanyrole('Admin|Normal_User')
-                <x-responsive-nav-link href="#" class="dark:text-gray-200">خوێندکار</x-responsive-nav-link>
-                <x-responsive-nav-link href="#" class="dark:text-gray-200">مامۆستا</x-responsive-nav-link>
+            @if (in_array(auth()->user()->role, ['admin', 'user']))
+                <x-responsive-nav-link :href="route('students.index')" class="dark:text-gray-200">خوێندکار</x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('teachers.index')" class="dark:text-gray-200">مامۆستا</x-responsive-nav-link>
                 <x-responsive-nav-link href="#" class="dark:text-gray-200">هاتووچۆ</x-responsive-nav-link>
-                <x-responsive-nav-link href="#" class="dark:text-gray-200">دارایی</x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('finance.index')" class="dark:text-gray-200">دارایی</x-responsive-nav-link>
                 <x-responsive-nav-link href="#" class="dark:text-gray-200">شەهادە و سەنەد</x-responsive-nav-link>
-            @endhasanyrole
+            @endif
 
-            @hasanyrole('Admin|Normal_User|Teacher')
-                <x-responsive-nav-link href="#" class="dark:text-gray-200">وانەکان</x-responsive-nav-link>
-                <x-responsive-nav-link href="#" class="dark:text-gray-200">ئامادەبوون</x-responsive-nav-link>
-            @endhasanyrole
+            @if (in_array(auth()->user()->role, ['admin', 'user', 'teacher']))
+                <x-responsive-nav-link :href="route('lessons.index')" class="dark:text-gray-200">وانەکان</x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('attendances.index')" class="dark:text-gray-200">ئامادەبوون</x-responsive-nav-link>
+            @endif
 
-            @role('Admin')
+            @if (auth()->user()->role === 'admin')
                 <x-responsive-nav-link href="#" class="dark:text-gray-200">تەندروستی</x-responsive-nav-link>
-                <x-responsive-nav-link href="#" class="dark:text-gray-200">بەکارهێنەر</x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('users.index')" class="dark:text-gray-200">بەکارهێنەر</x-responsive-nav-link>
                 <x-responsive-nav-link href="#" class="dark:text-gray-200">پاشەکاوت</x-responsive-nav-link>
-            @endrole
+            @endif
         </div>
+
         <div class="pt-4 pb-1 border-t border-gray-200 dark:border-gray-600">
             <div class="px-4">
                 <div class="font-medium text-base text-gray-800 dark:text-gray-200">{{ Auth::user()->name }}</div>

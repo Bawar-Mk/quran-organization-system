@@ -10,7 +10,7 @@ class Teacher extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id', // ئەمەمان زیاد کرد
+        'user_id',
         'full_name',
         'phone_number',
         'date_of_birth',
@@ -27,5 +27,11 @@ class Teacher extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    // پەیوەندی نێوان مامۆستا و وانەکان (ئەمەیە کە ئیرۆرەکەی دروستکردبوو)
+    public function lessons()
+    {
+        return $this->hasMany(Lesson::class);
     }
 }

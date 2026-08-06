@@ -26,10 +26,17 @@ class LessonController extends Controller
             'teacher_id' => 'required|exists:teachers,id',
             'start_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:start_date',
-            'schedule' => 'required|string',
+            'days' => 'required|array|min:1', // وەرگرتنی ڕۆژەکان بە شێوەی ئەرەی
+            'time' => 'required', // وەرگرتنی کاتژمێر
             'passing_score' => 'required|integer|min:0|max:100',
             'notes' => 'nullable|string',
         ]);
+
+        // تێکەڵکردنی ڕۆژەکان و کاتەکە بۆ ناو یەک ستوون بۆ داتابەیسەکە
+        $schedule = implode(' و ', $request->days) . ' - کاتژمێر ' . date('h:i A', strtotime($request->time));
+
+        $validated['schedule'] = $schedule;
+        unset($validated['days'], $validated['time']);
 
         Lesson::create($validated);
         return redirect()->route('lessons.index')->with('success', 'وانە بە سەرکەوتوویی دروستکرا.');
@@ -37,13 +44,12 @@ class LessonController extends Controller
 
     public function show(Lesson $lesson)
     {
-        // هێنانی خوێندکاران و ڕیزبەندییان بەپێی نمرە
         $students = $lesson->students()->orderByPivot('score', 'desc')->get();
-        $allStudents = Student::whereNotIn('id', $students->pluck('id'))->get(); // خوێندکارە بەشدارنەبووەکان
+        $allStudents = Student::whereNotIn('id', $students->pluck('id'))->get();
 
         return view('lessons.show', compact('lesson', 'students', 'allStudents'));
     }
-    // فەنکشنی نوێکردنەوەی زانیاری وانە
+
     public function update(Request $request, Lesson $lesson)
     {
         $validated = $request->validate([
@@ -51,9 +57,15 @@ class LessonController extends Controller
             'teacher_id' => 'required|exists:teachers,id',
             'start_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:start_date',
-            'schedule' => 'required|string',
+            'days' => 'required|array|min:1',
+            'time' => 'required',
             'passing_score' => 'required|integer|min:0|max:100',
         ]);
+
+        $schedule = implode(' و ', $request->days) . ' - کاتژمێر ' . date('h:i A', strtotime($request->time));
+
+        $validated['schedule'] = $schedule;
+        unset($validated['days'], $validated['time']);
 
         $lesson->update($validated);
         return back()->with('success', 'زانیارییەکانی وانەکە بە سەرکەوتوویی نوێکرایەوە.');
@@ -65,14 +77,12 @@ class LessonController extends Controller
         return redirect()->route('lessons.index')->with('success', 'وانەکە سڕایەوە.');
     }
 
-    // کۆتایی هێنان بە وانە
     public function finish(Lesson $lesson)
     {
         $lesson->update(['status' => 'finished']);
         return back()->with('success', 'وانەکە بە سەرکەوتوویی کۆتایی پێهێنرا.');
     }
 
-    // بەشداریکردنی خوێندکار لە خول
     public function enrollStudent(Request $request, Lesson $lesson)
     {
         $request->validate(['student_id' => 'required|exists:students,id', 'is_paid' => 'required|boolean']);
@@ -80,7 +90,6 @@ class LessonController extends Controller
         return back()->with('success', 'خوێندکار بەشداریکرا.');
     }
 
-    // نوێکردنەوەی نمرەی خوێندکار
     public function updateScore(Request $request, Lesson $lesson, Student $student)
     {
         $request->validate(['score' => 'required|integer|min:0|max:100']);
@@ -88,28 +97,21 @@ class LessonController extends Controller
         return back()->with('success', 'نمرە نوێکرایەوە.');
     }
 
-    // دەرکردنی خوێندکار لە خول
     public function removeStudent(Lesson $lesson, Student $student)
     {
         $lesson->students()->detach($student->id);
         return back()->with('success', 'خوێندکارەکە لە وانەکە سڕایەوە.');
     }
-    // چاپکردنی بڕوانامە
+
     public function printCertificate(Lesson $lesson, Student $student)
     {
-        // هێنانی زانیاری بەشداریکردنی ئەم خوێندکارە
         $enrollment = $lesson->students()->where('student_id', $student->id)->first();
-
-        // دڵنیابوونەوە لەوەی کە خوێندکارەکە لە خولەکەدایە
         if (!$enrollment) {
             return redirect()->back()->with('error', 'ئەم خوێندکارە بەشدار نییە لەم خولەدا.');
         }
-
-        // دڵنیابوونەوە لەوەی کە مەرجی نمرەی هێناوە
         if ($enrollment->pivot->score < $lesson->passing_score) {
             return redirect()->back()->with('error', 'ئەم خوێندکارە مافی وەرگرتنی بڕوانامەی نییە.');
         }
-
         return view('lessons.certificate', compact('lesson', 'student', 'enrollment'));
     }
 }

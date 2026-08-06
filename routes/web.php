@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\AttendanceController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\TeacherController;
@@ -16,6 +18,16 @@ Route::get('/', function () {
 // لێرەدا 'verified' مان لابرد چونکە ئیمەیڵمان پێویست نییە
 Route::middleware(['auth'])->group(function () {
 
+    Route::get('/attendances', [AttendanceController::class, 'index'])->name('attendances.index');
+    Route::get('/attendances/{lesson}/take', [AttendanceController::class, 'take'])->name('attendances.take');
+    Route::post('/attendances/{lesson}/ajax-store', [AttendanceController::class, 'ajaxStore'])->name('attendances.ajaxStore'); // ئەمەمان زیاد کرد
+    Route::get('/attendances', [AttendanceController::class, 'index'])->name('attendances.index');
+    Route::get('/attendances/{lesson}/take', [AttendanceController::class, 'take'])->name('attendances.take');
+    Route::post('/attendances/{lesson}', [AttendanceController::class, 'store'])->name('attendances.store');
+    Route::get('/attendances/{lesson}/report', [AttendanceController::class, 'report'])->name('attendances.report');
+
+    Route::resource('users', UserController::class);
+    Route::patch('users/{user}/toggle-status', [UserController::class, 'toggleStatus'])->name('users.toggleStatus');
     // ڕاوتی داشبۆرد بەستراوەتەوە بە کۆنتڕۆڵەرەکەی خۆیەوە بۆ هێنانی ئامارەکان
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 

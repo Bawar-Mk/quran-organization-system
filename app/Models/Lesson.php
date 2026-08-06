@@ -29,4 +29,8 @@ class Lesson extends Model
     {
         return $this->belongsToMany(Student::class)->withPivot('is_paid', 'score')->withTimestamps();
     }
+    public function attendances()
+    {
+        return $this->hasMany(Attendance::class);
+    }
 }
