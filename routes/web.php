@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\BackupController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\DashboardController;
@@ -17,6 +18,12 @@ Route::get('/', function () {
 
 // لێرەدا 'verified' مان لابرد چونکە ئیمەیڵمان پێویست نییە
 Route::middleware(['auth'])->group(function () {
+    // ڕاوتەکانی بەشی پاشەکەوتکردن (باکئەپ)
+    Route::get('/backup', [BackupController::class, 'index'])->name('backup.index');
+    Route::post('/backup/create', [BackupController::class, 'createBackup'])->name('backup.create');
+    Route::post('/backup/restore', [BackupController::class, 'restoreBackup'])->name('backup.restore');
+    Route::get('/backup/download/{file}', [BackupController::class, 'download'])->name('backup.download');
+    Route::post('/backup/open-folder', [BackupController::class, 'openFolder'])->name('backup.open_folder');
 
     Route::get('/attendances', [AttendanceController::class, 'index'])->name('attendances.index');
     Route::get('/attendances/{lesson}/take', [AttendanceController::class, 'take'])->name('attendances.take');

@@ -28,7 +28,7 @@
                             سەنەد</x-nav-link>
                     @endif
 
-                    <!-- هەموویان دەتوانن وانەکان و ئامادەبوون ببینن (بەڵام مامۆستا تەنها هی خۆی دەبینێت دواتر لە کۆنتڕۆڵەر ڕێکی دەخەین) -->
+                    <!-- هەموویان دەتوانن وانەکان و ئامادەبوون ببینن -->
                     @if (in_array(auth()->user()->role, ['admin', 'user', 'teacher']))
                         <x-nav-link :href="route('lessons.index')" :active="request()->routeIs('lessons.*')"
                             class="dark:text-gray-100 dark:hover:text-white">وانەکان</x-nav-link>
@@ -42,7 +42,9 @@
                             class="dark:text-gray-100 dark:hover:text-white">تەندروستی</x-nav-link>
                         <x-nav-link :href="route('users.index')" :active="request()->routeIs('users.*')"
                             class="dark:text-gray-100 dark:hover:text-white">بەکارهێنەر</x-nav-link>
-                        <x-nav-link href="#"
+
+                        <!-- لێرەدا کێشەکە چارەسەرکرا ('backup.index') لەجیاتی 'backups.index' -->
+                        <x-nav-link :href="route('backup.index')" :active="request()->routeIs('backup.*')"
                             class="dark:text-gray-100 dark:hover:text-white">پاشەکاوت</x-nav-link>
                     @endif
                 </div>
@@ -122,22 +124,31 @@
             </x-responsive-nav-link>
 
             @if (in_array(auth()->user()->role, ['admin', 'user']))
-                <x-responsive-nav-link :href="route('students.index')" class="dark:text-gray-200">خوێندکار</x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('teachers.index')" class="dark:text-gray-200">مامۆستا</x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('students.index')" :active="request()->routeIs('students.*')"
+                    class="dark:text-gray-200">خوێندکار</x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('teachers.index')" :active="request()->routeIs('teachers.*')"
+                    class="dark:text-gray-200">مامۆستا</x-responsive-nav-link>
                 <x-responsive-nav-link href="#" class="dark:text-gray-200">هاتووچۆ</x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('finance.index')" class="dark:text-gray-200">دارایی</x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('finance.index')" :active="request()->routeIs('finance.*')"
+                    class="dark:text-gray-200">دارایی</x-responsive-nav-link>
                 <x-responsive-nav-link href="#" class="dark:text-gray-200">شەهادە و سەنەد</x-responsive-nav-link>
             @endif
 
             @if (in_array(auth()->user()->role, ['admin', 'user', 'teacher']))
-                <x-responsive-nav-link :href="route('lessons.index')" class="dark:text-gray-200">وانەکان</x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('attendances.index')" class="dark:text-gray-200">ئامادەبوون</x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('lessons.index')" :active="request()->routeIs('lessons.*')"
+                    class="dark:text-gray-200">وانەکان</x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('attendances.index')" :active="request()->routeIs('attendances.*')"
+                    class="dark:text-gray-200">ئامادەبوون</x-responsive-nav-link>
             @endif
 
             @if (auth()->user()->role === 'admin')
                 <x-responsive-nav-link href="#" class="dark:text-gray-200">تەندروستی</x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('users.index')" class="dark:text-gray-200">بەکارهێنەر</x-responsive-nav-link>
-                <x-responsive-nav-link href="#" class="dark:text-gray-200">پاشەکاوت</x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('users.index')" :active="request()->routeIs('users.*')"
+                    class="dark:text-gray-200">بەکارهێنەر</x-responsive-nav-link>
+
+                <!-- لێرەدا کێشەکە چارەسەرکرا ('backup.index') لەجیاتی 'backups.index' -->
+                <x-responsive-nav-link :href="route('backup.index')" :active="request()->routeIs('backup.*')"
+                    class="dark:text-gray-200">پاشەکاوت</x-responsive-nav-link>
             @endif
         </div>
 

@@ -8,8 +8,30 @@
     <div class="py-12" dir="rtl">
         <div class="max-w-[95%] mx-auto sm:px-6 lg:px-8 space-y-8">
 
+            <!-- پەیامی بەخێرهاتن بۆ هەمووان -->
+            <div
+                class="bg-white dark:bg-gray-800 shadow-md sm:rounded-2xl p-6 border-r-4 border-blue-500 overflow-hidden relative">
+                <div class="relative z-10">
+                    <h1 class="text-2xl font-black text-gray-900 dark:text-white mb-2">
+                        سڵاو، <span class="text-blue-600 dark:text-blue-400">{{ $user->name }}</span> 👋
+                    </h1>
+                    <p class="text-gray-600 dark:text-gray-300 font-bold">
+                        بەخێربێیتەوە بۆ سیستەمی بەڕێوەبردن. ئامارەکانی
+                        @if ($user->role === 'admin')
+                            <span class="text-purple-600">گشتی سیستەمەکە</span>
+                        @elseif($user->role === 'teacher')
+                            <span class="text-green-600">تایبەت بە خۆت</span>
+                        @else
+                            ئەمڕۆ
+                        @endif
+                        لەم پەڕەیەدا دەبینیت.
+                    </p>
+                </div>
+            </div>
+
             <!-- کارتەکانی ئامار -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+
                 <!-- کارتی خوێندکاران (بۆ هەردوولا) -->
                 <div
                     class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 border-r-4 border-blue-500 flex items-center justify-between transform transition hover:-translate-y-1 hover:shadow-xl">
@@ -23,20 +45,6 @@
                     </div>
                     <div class="text-5xl opacity-80">👨‍🎓</div>
                 </div>
-
-                <!-- کارتی مامۆستایان (تەنها ئەدمین דەیبینێت) -->
-                @if ($user->role === 'admin')
-                    <div
-                        class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 border-r-4 border-purple-500 flex items-center justify-between transform transition hover:-translate-y-1 hover:shadow-xl">
-                        <div>
-                            <p class="text-sm font-bold text-gray-500 dark:text-gray-400 mb-1">کۆی مامۆستایان</p>
-                            <p class="text-3xl font-black text-gray-900 dark:text-white font-mono">
-                                {{ $stats['teachers_count'] }}
-                            </p>
-                        </div>
-                        <div class="text-5xl opacity-80">👨‍🏫</div>
-                    </div>
-                @endif
 
                 <!-- کارتی وانە کاراکان (بۆ هەردوولا) -->
                 <div
@@ -52,7 +60,21 @@
                     <div class="text-5xl opacity-80">📚</div>
                 </div>
 
-                <!-- کارتی پارەدان (تەنها ئەدمین דەیبینێت) -->
+                <!-- کارتی مامۆستایان (تەنها ئەدمین دەیبینێت) -->
+                @if ($user->role === 'admin')
+                    <div
+                        class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 border-r-4 border-purple-500 flex items-center justify-between transform transition hover:-translate-y-1 hover:shadow-xl">
+                        <div>
+                            <p class="text-sm font-bold text-gray-500 dark:text-gray-400 mb-1">کۆی مامۆستایان</p>
+                            <p class="text-3xl font-black text-gray-900 dark:text-white font-mono">
+                                {{ $stats['teachers_count'] }}
+                            </p>
+                        </div>
+                        <div class="text-5xl opacity-80">👨‍🏫</div>
+                    </div>
+                @endif
+
+                <!-- کارتی پارەدان (تەنها ئەدمین دەیبینێت) -->
                 @if ($user->role === 'admin')
                     <div
                         class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 border-r-4 border-yellow-500 flex items-center justify-between transform transition hover:-translate-y-1 hover:shadow-xl">
@@ -67,7 +89,7 @@
                 @endif
             </div>
 
-            <!-- خشتەی دوایین وانەکان (تەنها ئەدمین דەیبینێت) -->
+            <!-- خشتەی دوایین وانەکان (تەنها ئەدمین دەیبینێت) -->
             @if ($user->role === 'admin')
                 <div
                     class="bg-white dark:bg-gray-800 shadow-lg sm:rounded-2xl border border-gray-200 dark:border-gray-700 overflow-hidden">
@@ -126,15 +148,15 @@
                 </div>
             @endif
 
-            <!-- پەیامی تایبەت بە مامۆستا ئەگەر داشبۆردەکەی زۆر خاڵی بوو -->
+            <!-- پەیامی ڕێنمایی بۆ مامۆستا کاتێک داشبۆردەکەی کەمە -->
             @if ($user->role === 'teacher')
                 <div
-                    class="bg-blue-50 dark:bg-blue-900/20 rounded-2xl p-6 border border-blue-100 dark:border-blue-800 text-center mt-8">
-                    <div class="text-4xl mb-4">🌟</div>
-                    <h3 class="text-xl font-black text-blue-800 dark:text-blue-300 mb-2">کارەکانت بە سەرکەوتوویی بەڕێوە
+                    class="bg-blue-50 dark:bg-blue-900/20 rounded-2xl p-6 border border-blue-100 dark:border-blue-800 text-center mt-8 shadow-sm">
+                    <div class="text-4xl mb-4">📝</div>
+                    <h3 class="text-xl font-black text-blue-800 dark:text-blue-300 mb-2">وانەکانت بە سەرکەوتوویی بەڕێوە
                         دەچن!</h3>
-                    <p class="text-blue-600 dark:text-blue-400">دەتوانیت لە ڕێگەی لیستی لای ڕاستەوە بچیتە ناو وانەکانت و
-                        ئامادەبوونی خوێندکارەکانت وەربگریت.</p>
+                    <p class="text-blue-600 dark:text-blue-400 font-bold">تکایە لە ڕێگەی لیستی سەرەوە بچۆ ناو بەشی
+                        "ئامادەبوون" بۆ وەرگرتنی غیاباتی خوێندکارەکانت بە شێوەی ڕۆژانە.</p>
                 </div>
             @endif
 
